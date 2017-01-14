@@ -56,9 +56,9 @@ library(forecast)
 stock_price2<-autoplot(stock_price, s.window="periodic", robust=TRUE)
 #autoplot(stl(lflat_net_price, s.window="periodic", robust=TRUE))
 ggsave(filename="./Figure/stock_price2.png",plot=stock_price2)
-
-![plot of chunk plot](./Figure/stock_price2.png)
-
 ```
+![Hang Seng Index](./Figure/stock_price2.png)
+
+
 
 
