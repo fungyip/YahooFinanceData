@@ -1,9 +1,6 @@
 # install.packages("tidyverse")
 library(tidyverse)
 
-# optional: set the minimum amount of time that a stock has to have historical
-# data for inclusion in the model (the entire model is limited in the data it
-# can use by youngest stock)
 time_screen = 364
 
 #get present date
@@ -19,12 +16,8 @@ start_day = "1"
 
 ##Stock Selection
 
-#keep in mind that the model is limited by the *youngest* stock
-# if the youngest stock is one month the model only uses the historical
-# prices for all stocks for one month
-
 #恒生指數
-tickers = c(
+symbols = c(
   "0001.HK", #長和
   "0002.HK", #中電控股
   "0003.HK", #香港中華煤氣
@@ -74,31 +67,31 @@ tickers = c(
 
 ##Stock Data Extraction
 count = 0
-for(ticker in tickers)
+for(symbol in symbols)
 {
-  #read the ticker historical charts  
-  retrieved_csv <- read.csv(paste0("http://ichart.finance.yahoo.com/table.csv?s=",ticker,"&d=",toString(as.double(today_month)-1),"&e=",today_day,"&f=",today_year,"&g=d","&a=",toString(as.double(start_month)-1),"&b=",start_day,"&c=",start_year,"&ignore=.csv", collapse = ", "), sep=",", header=1 )
+  #read the symbol historical charts  
+  retrieved_csv <- read.csv(paste0("http://ichart.finance.yahoo.com/table.csv?s=",symbol,"&d=",toString(as.double(today_month)-1),"&e=",today_day,"&f=",today_year,"&g=d","&a=",toString(as.double(start_month)-1),"&b=",start_day,"&c=",start_year,"&ignore=.csv", collapse = ", "), sep=",", header=1 )
   
-  write_csv(retrieved_csv, paste("./DataOut/HangSeng/", ticker,".csv", sep=""))
+  write_csv(retrieved_csv, paste("./DataOut/HangSeng/", symbol,".csv", sep=""))
   
-  #this is an awkward way to only use tickers if they have enough rows of data
+  #only use symbols if they have enough rows of data
   if (nrow(retrieved_csv) > time_screen)
   {
     
-    #keep this ticker in the list for the model
+    #keep this symbol in the list for the model
     if(count==0){
-      tickers2 <- c(ticker)
+      symbols2 <- c(symbol)
     } else {
-      tickers2 <- c(tickers2,ticker)
+      symbols2 <- c(symbols2,symbol)
     }
-    # problem is we need to merge on the date, and R thinks our
-    # date fields are factors, not 'dates'
+    
+    # Date format
     retrieved_csv$Date = as.POSIXct(retrieved_csv$Date, format="%Y-%m-%d")
     
     
     #calculate the day change (%)
     retrieved_csv$CloseChange <- (retrieved_csv$Close-retrieved_csv$Open)/(retrieved_csv$Open)*100
-    #filecsv$CloseChange <- (filecsv[,paste("Close_",ticker,sep="")]-filecsv[,paste("Open_",ticker,sep="")])/(filecsv[,paste("Open_",ticker,sep="")])*100
+    #filecsv$CloseChange <- (filecsv[,paste("Close_",symbol,sep="")]-filecsv[,paste("Open_",symbol,sep="")])/(filecsv[,paste("Open_",symbol,sep="")])*100
     retrieved_csv$CloseChange <- round(retrieved_csv$CloseChange, 1)
     
     
@@ -110,12 +103,10 @@ for(ticker in tickers)
     retrieved_csv_colnames = retrieved_csv_colnames[! retrieved_csv_colnames %in% "Low"]
     retrieved_csv_colnames = retrieved_csv_colnames[! retrieved_csv_colnames %in% "Adj.Close"]
     
-    
-    
     retrieved_csv <- retrieved_csv[,retrieved_csv_colnames]
     
-    #amend the column names - add ticker name suffix
-    colnames(retrieved_csv) <- paste(colnames(retrieved_csv), ticker, sep = "_")
+    #amend the column names - add symbol name suffix
+    colnames(retrieved_csv) <- paste(colnames(retrieved_csv), symbol, sep = "_")
     #merge into one big table
     if (count==0){
       bigtable <- retrieved_csv
