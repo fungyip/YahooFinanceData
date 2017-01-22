@@ -69,23 +69,22 @@ symbols = c(
 count = 0
 for(symbol in symbols)
 {
-  #read the symbol historical charts  
+  # import data for historical stocks  
   retrieved_csv <- read.csv(paste0("http://ichart.finance.yahoo.com/table.csv?s=",symbol,"&d=",toString(as.double(today_month)-1),"&e=",today_day,"&f=",today_year,"&g=d","&a=",toString(as.double(start_month)-1),"&b=",start_day,"&c=",start_year,"&ignore=.csv", collapse = ", "), sep=",", header=1 )
   
   write_csv(retrieved_csv, paste("./DataOut/HangSeng/", symbol,".csv", sep=""))
   
-  #only use symbols if they have enough rows of data
+  #only use stocks whose data are larger than pre-set time_screen 
   if (nrow(retrieved_csv) > time_screen)
   {
     
-    #keep this symbol in the list for the model
     if(count==0){
       symbols2 <- c(symbol)
     } else {
       symbols2 <- c(symbols2,symbol)
     }
     
-    # Date format
+    # Change Date format
     retrieved_csv$Date = as.POSIXct(retrieved_csv$Date, format="%Y-%m-%d")
     
     
