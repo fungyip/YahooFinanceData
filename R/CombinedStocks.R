@@ -1,3 +1,4 @@
+## credited by http://www.worldominance.com/2014/12/19/take-over-the-world-with-the-stock-market-random-forest-models-using-r/
 # install.packages("tidyverse")
 library(tidyverse)
 
