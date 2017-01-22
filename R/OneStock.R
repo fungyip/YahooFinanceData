@@ -1,3 +1,6 @@
+# install.packages("tidyverse")
+library(tidyverse)
+
 #set start date for historical look
 start_year = "1990"
 start_month = "1"
@@ -12,8 +15,9 @@ today_day = format(today, "%d")
 #Yahoo Finance Symbol
 tickers = c("^HSI")
 
-stock <- read.csv(paste0("http://ichart.finance.yahoo.com/table.csv?s=",tickers,"&d=",toString(as.double(today_month)-1),"&e=",today_day,"&f=",today_year,"&g=d","&a=",toString(as.double(start_month)-1),"&b=",start_day,"&c=",start_year,"&ignore=.csv", collapse = ", "))
-write.csv(stock, file=paste("./DataOut/", tickers,".csv", sep=""))
+stock <- read_csv(paste0("http://ichart.finance.yahoo.com/table.csv?s=",tickers,"&d=",toString(as.double(today_month)-1),"&e=",today_day,"&f=",today_year,"&g=d","&a=",toString(as.double(start_month)-1),"&b=",start_day,"&c=",start_year,"&ignore=.csv", collapse = ", "))
+write_csv(stock, paste("./DataOut/", tickers,".csv", sep=""))
+
 
 # #sort Date
 # stock_date <- stock[rev(order(as.Date(stock$Date, format="%d/%m/%Y"))),]
